@@ -1,10 +1,9 @@
-'use client'
+import React from 'react'
 
-import Navbar from "@/Components/navbar"
 const page = () => {
   return (
     <div>
-      <Navbar />
+      <h1>Sign In</h1>
     </div>
   )
 }
