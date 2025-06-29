@@ -2,6 +2,6 @@
 export interface ApiResponse {
   success: boolean;
   message: string;
-  isAcceptingMessages?: boolean;
-
+  isVerified?: boolean;
+  token?: string;
 };

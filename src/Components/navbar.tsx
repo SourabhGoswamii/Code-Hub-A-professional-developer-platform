@@ -3,8 +3,8 @@ import React from "react";
 const navbarItems = [
     { name: "Home", link: "#" },
     { name: "About", link: "#about" },
-    { name: "Projects", link: "#projects" },
-    { name: "Contact", link: "#contact" },
+    { name: "signin", link: "/sign-in" },
+    { name: "signup", link: "/sign-up" },
 ];
 
 const navbarConfig = {
