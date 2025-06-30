@@ -1,9 +1,12 @@
 "use client";
+
 import { useEffect, useState } from "react";
+import DashboardLayout from "@/components/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
+import { RiTrophyLine, RiTeamLine, RiFileTextLine, RiMapPinLine, RiGlobalLine, RiUserLine } from "react-icons/ri";
 
 interface Notification {
   type: string;
@@ -63,174 +66,168 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Progress value={33} className="w-[60%] mx-auto" />
-      </div>
+      <DashboardLayout>
+        <div className="min-h-[80vh] flex items-center justify-center">
+          <Progress value={33} className="w-[60%] max-w-md" />
+        </div>
+      </DashboardLayout>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-[400px]">
-          <CardHeader>
-            <CardTitle className="text-red-500">Error</CardTitle>
-          </CardHeader>
-          <CardContent>{error}</CardContent>
-        </Card>
-      </div>
+      <DashboardLayout>
+        <div className="min-h-[80vh] flex items-center justify-center">
+          <Card className="w-[400px]">
+            <CardHeader>
+              <CardTitle className="text-destructive">Error</CardTitle>
+            </CardHeader>
+            <CardContent>{error}</CardContent>
+          </Card>
+        </div>
+      </DashboardLayout>
     );
   }
 
+  const level = Math.floor(userData?.xp ? userData.xp / 1000 : 0);
+  const xpProgress = userData?.xp ? (userData.xp % 1000) / 10 : 0;
+
   return (
-    <div className="container mx-auto py-8 px-4">
-      <div className="grid gap-6 md:grid-cols-2">
-        {/* Profile Overview Card */}
-        <Card className="col-span-2">
-          <CardHeader>
-            <CardTitle className="text-2xl font-bold">Profile Overview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Username</p>
-                  <h3 className="text-2xl font-bold">{userData?.username || 'Not set'}</h3>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Email</p>
-                  <h3 className="text-lg font-medium truncate">{userData?.email || 'Not set'}</h3>
-                  <Badge variant={userData?.isVerified ? "default" : "destructive"} className="mt-1">
-                    {userData?.isVerified ? "Verified" : "Not Verified"}
-                  </Badge>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Full Name</p>
-                  <h3 className="text-lg font-medium">{userData?.name || 'Not set'}</h3>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Location</p>
-                  <h3 className="text-lg font-medium">{userData?.location || 'Not set'}</h3>
-                </div>
+    <DashboardLayout>
+      <div className="space-y-6">
+        {/* Profile Overview */}
+        <div className="grid gap-6 lg:grid-cols-12">
+          {/* Main Profile Card */}
+          <Card className="lg:col-span-8 bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
+            <CardHeader className="flex flex-row items-center gap-4">
+              <div className="relative w-20 h-20">
+                <img
+                  src={userData?.avatarUrl || "https://github.com/shadcn.png"}
+                  alt="Profile"
+                  className="rounded-full w-full h-full object-cover border-2 border-primary"
+                />
+                <Badge className="absolute -bottom-1 -right-1 bg-primary">
+                  Level {level}
+                </Badge>
               </div>
-              <div className="space-y-4">
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Website</p>
-                  <h3 className="text-lg font-medium truncate">
-                    {userData?.website ? (
-                      <a href={userData.website} target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
-                        {userData.website}
-                      </a>
-                    ) : 'Not set'}
-                  </h3>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <h1 className="text-2xl font-bold">{userData?.username}</h1>
+                  {userData?.isVerified && (
+                    <Badge variant="default" className="bg-blue-500">Verified</Badge>
+                  )}
                 </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Bio</p>
-                  <p className="text-sm text-muted-foreground">
-                    {userData?.bio || 'No bio added yet'}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-muted-foreground">Member Since</p>
-                  <p className="text-sm">
-                    {userData?.createdAt ? new Date(userData.createdAt).toLocaleDateString() : 'Unknown'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Stats Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Statistics</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Karma Points</p>
-                <h3 className="text-2xl font-bold">{userData?.karma || 0}</h3>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Experience (XP)</p>
-                <h3 className="text-2xl font-bold">{userData?.xp || 0}</h3>
-              </div>
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Network</p>
-                <div className="grid grid-cols-2 gap-4 mt-2">
-                  <div>
-                    <p className="text-sm">Followers</p>
-                    <p className="text-xl font-bold">{userData?.followers?.length || 0}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm">Following</p>
-                    <p className="text-xl font-bold">{userData?.following?.length || 0}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Activity Card */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Activity Overview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Badges Earned</p>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {userData?.badges && userData.badges.length > 0 ? (
-                    userData.badges.map((badge, index) => (
-                      <Badge key={index} variant="secondary">{badge}</Badge>
-                    ))
-                  ) : (
-                    <p className="text-sm text-muted-foreground">No badges yet</p>
+                <p className="text-muted-foreground">{userData?.bio || "No bio added yet"}</p>
+                <div className="flex gap-4 mt-2">
+                  {userData?.location && (
+                    <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <RiMapPinLine className="w-4 h-4" />
+                      {userData.location}
+                    </div>
+                  )}
+                  {userData?.website && (
+                    <a
+                      href={userData.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 text-sm text-primary hover:underline"
+                    >
+                      <RiGlobalLine className="w-4 h-4" />
+                      Website
+                    </a>
                   )}
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* XP Progress */}
                 <div>
-                  <p className="text-sm font-medium">Challenges</p>
-                  <div className="mt-1">
-                    <p className="text-sm">Created: {userData?.createdChallenges?.length || 0}</p>
-                    <p className="text-sm">Joined: {userData?.joinedChallenges?.length || 0}</p>
+                  <div className="flex justify-between text-sm mb-2">
+                    <span>Level Progress</span>
+                    <span>{xpProgress.toFixed(1)}%</span>
                   </div>
+                  <Progress value={xpProgress} className="h-2" />
                 </div>
-                <div>
-                  <p className="text-sm font-medium">Community</p>
-                  <div className="mt-1">
-                    <p className="text-sm">Posts: {userData?.posts?.length || 0}</p>
-                    <p className="text-sm">Comments: {userData?.comments?.length || 0}</p>
+                
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                  <div className="bg-secondary/50 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold">{userData?.karma || 0}</div>
+                    <div className="text-sm text-muted-foreground">Karma</div>
+                  </div>
+                  <div className="bg-secondary/50 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold">{userData?.followers?.length || 0}</div>
+                    <div className="text-sm text-muted-foreground">Followers</div>
+                  </div>
+                  <div className="bg-secondary/50 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold">{userData?.following?.length || 0}</div>
+                    <div className="text-sm text-muted-foreground">Following</div>
+                  </div>
+                  <div className="bg-secondary/50 rounded-lg p-3 text-center">
+                    <div className="text-2xl font-bold">{userData?.badges?.length || 0}</div>
+                    <div className="text-sm text-muted-foreground">Badges</div>
                   </div>
                 </div>
               </div>
-              <div>
-                <p className="text-sm font-medium">Teams</p>
-                <p className="text-sm mt-1">Member of {userData?.teams?.length || 0} teams</p>
+            </CardContent>
+          </Card>
+
+          {/* Activity Overview */}
+          <Card className="lg:col-span-4 bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
+            <CardHeader>
+              <CardTitle>Activity Overview</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center gap-3 p-3 bg-secondary/30 rounded-lg">
+                <RiTrophyLine className="w-8 h-8 text-primary" />
+                <div>
+                  <div className="text-sm font-medium">Challenges</div>
+                  <div className="text-2xl font-bold">
+                    {(userData?.joinedChallenges?.length || 0) + (userData?.createdChallenges?.length || 0)}
+                  </div>
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+              <div className="flex items-center gap-3 p-3 bg-secondary/30 rounded-lg">
+                <RiTeamLine className="w-8 h-8 text-primary" />
+                <div>
+                  <div className="text-sm font-medium">Teams</div>
+                  <div className="text-2xl font-bold">{userData?.teams?.length || 0}</div>
+                </div>
+              </div>
+              <div className="flex items-center gap-3 p-3 bg-secondary/30 rounded-lg">
+                <RiFileTextLine className="w-8 h-8 text-primary" />
+                <div>
+                  <div className="text-sm font-medium">Posts</div>
+                  <div className="text-2xl font-bold">{userData?.posts?.length || 0}</div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Recent Notifications */}
-        <Card className="col-span-2">
-          <CardHeader>
+        <Card className="bg-card/50 backdrop-blur supports-[backdrop-filter]:bg-card/50">
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Recent Notifications</CardTitle>
+            <Button variant="ghost" size="sm">View All</Button>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {userData?.notifications && userData.notifications.length > 0 ? (
                 userData.notifications.slice(0, 5).map((notification, index) => (
-                  <div key={index} className="flex items-center justify-between border-b pb-2">
-                    <div>
-                      <p className="text-sm font-medium">{notification.message}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(notification.createdAt).toLocaleDateString()}
-                      </p>
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-3 rounded-lg transition-colors hover:bg-secondary/50"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2 h-2 rounded-full ${notification.read ? 'bg-muted' : 'bg-primary'}`} />
+                      <div>
+                        <p className="text-sm font-medium">{notification.message}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {new Date(notification.createdAt).toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
                     <Badge variant={notification.read ? "secondary" : "default"}>
                       {notification.read ? "Read" : "New"}
@@ -238,12 +235,14 @@ export default function Dashboard() {
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-muted-foreground">No notifications yet</p>
+                <p className="text-sm text-muted-foreground text-center py-4">
+                  No notifications yet
+                </p>
               )}
             </div>
           </CardContent>
         </Card>
       </div>
-    </div>
+    </DashboardLayout>
   );
 }
